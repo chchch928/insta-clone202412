@@ -33,7 +33,14 @@
         <div class="upload-area">
           <i class="fa-regular fa-images"></i>
           <p>사진과 동영상을 여기에 끌어다 놓으세요</p>
-          <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+          <input
+                  type="file"
+                  id="fileInput"
+                  <%-- multiple없으면 여러개 선택 불가--%>
+                  multiple
+                  <%--이미지 제외 다른 파일들은 선택할 수 없도록--%>
+                  accept="image/*"
+                  style="display: none;">
           <button class="upload-button">컴퓨터에서 선택</button>
         </div>
       </div>
