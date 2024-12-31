@@ -1,7 +1,8 @@
 
+import CarouselManager from "../ui/CarouselManager.js";
 
-// step 모듈 내에서 전역관리
-let currentStep = null;
+// step 모듈내에서 전역관리
+let currentStep = 1;
 
 // 피드 생성 모달을 전역관리
 const $modal = document.getElementById('createPostModal');
@@ -20,7 +21,7 @@ const elements = {
 // 모달 바디 스텝을 이동하는 함수
 function goToStep(step) {
 
-    if(step < 1 || step > 3) return;
+    if (step < 1 || step > 3) return;
 
     currentStep = step;
 
@@ -45,7 +46,6 @@ function goToStep(step) {
         $nextStepBtn.textContent = '공유하기';
         $modalTitle.textContent = '새 게시물 만들기';
     }
-
 }
 
 // 파일 업로드 관련 이벤트 함수
@@ -55,8 +55,8 @@ function setUpFileUploadEvents() {
     // 파일을 검사하고 다음 단계로 이동하는 함수
     const handleFiles = files => {
         // 파일의 개수가 10개가 넘는지 검사
-        if (files.length > 3) {
-            alert('최대 3개의 파일만 선택 가능합니다.');
+        if (files.length > 10) {
+            alert('최대 10개의 파일만 선택 가능합니다.');
             return;
         }
 
@@ -74,6 +74,16 @@ function setUpFileUploadEvents() {
             }
             return true;
         });
+
+        // 이미지 슬라이드 생성
+        const step2Carousel = new CarouselManager($modal.querySelector('.preview-container'));
+        step2Carousel.init(validFiles);
+
+        const step3Carousel = new CarouselManager(
+            $modal.querySelector('.write-container')
+        );
+        step3Carousel.init(validFiles);
+
 
         // 모달 step 2로 이동
         goToStep(2);
@@ -93,7 +103,7 @@ function setUpFileUploadEvents() {
 // 피드 생성 모달 관련 이벤트 함수
 function setUpModalEvents() {
 
-    const { $closeBtn, $backdrop,$backStepBtn,$nextStepBtn } = elements;
+    const { $closeBtn, $backdrop, $backStepBtn, $nextStepBtn } = elements;
 
     // 모달 열기 함수
     const openModal = (e) => {
@@ -123,17 +133,15 @@ function setUpModalEvents() {
     $backdrop.addEventListener('click', closeModal);
 
     // 모달 이전, 다음 스텝 클릭이벤트
-    $backStepBtn.addEventListener('click', () => goToStep(currentStep - 1))
-    $nextStepBtn.addEventListener('click',() => {
+    $backStepBtn.addEventListener('click', () => goToStep(currentStep - 1));
+    $nextStepBtn.addEventListener('click', () => {
         if (currentStep < 3) {
-            goToStep(currentStep + 1)
-        }else{
-            alert('서버로 게시물을 공유합니다.')
-
-            // 차후에 AJAX 구현
-
+            goToStep(currentStep + 1);
+        } else {
+            alert('서버로 게시물을 공유합니다.');
+            // 차후에 서버 AJAX 통신 구현...
         }
-    })
+    });
 }
 
 // 이벤트 바인딩 관련 함수
