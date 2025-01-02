@@ -37,7 +37,7 @@
         SELECT
             *
         FROM posts
-        ORDER BY created_at DESC
+        ORDER BY created_at DESC, id DESC
     </select>
 
 
