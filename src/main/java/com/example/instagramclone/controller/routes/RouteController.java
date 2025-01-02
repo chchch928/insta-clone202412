@@ -9,6 +9,8 @@ public class RouteController {
 
     @GetMapping("/")
     public String index() {
+        String a = null;
+        a.length();
         return "index";
     }
 
