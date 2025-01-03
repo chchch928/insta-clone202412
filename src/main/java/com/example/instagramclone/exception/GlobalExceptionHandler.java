@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?>handleGlobalException(Exception e, HttpServletRequest request) {
-        log.error("Unhandled exception occurred: {}", e.getMessage(),e);
+        log.error("Unexpected error occurred: {}", e.getMessage(),e);
 
         // 에러 응답객체 생성
         ErrorResponse response = ErrorResponse.builder()

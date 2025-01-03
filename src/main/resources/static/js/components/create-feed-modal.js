@@ -34,7 +34,7 @@ const elements = {
 
 // 로딩 스피너 처리
 function setLoading (loading = false){
-    const {$loadingSpinner, $backStepBtn, $nextStepBtn} = elements
+    const {$loadingSpinner, $backStepBtn, $nextStepBtn} = elements;
 
     $loadingSpinner.style.display = loading ? 'block' : 'none';
     $backStepBtn.style.visibility = loading ? 'hidden' : 'visible';
@@ -46,7 +46,7 @@ function setLoading (loading = false){
 async function fetchFeed(){
     if(currentStep !== 3)return;
 
-    const {$contentTextarea} = elements
+    const {$contentTextarea} = elements;
 
     // 작성자 이름과 피드내용을 전송
     const feedData = {
@@ -79,14 +79,14 @@ async function fetchFeed(){
     const data = await response.json();
 
     if(response.ok) {
-        window.location.reload() // 피드 새로고침
+        window.location.reload(); // 피드 새로고침
     }
     else{
         console.error('fail to request');
         alert(data.message)
     }
     setLoading(false);
-    },1500)
+    },1500);
 
 
 

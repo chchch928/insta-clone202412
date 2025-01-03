@@ -29,7 +29,9 @@ public class PostController {
     @GetMapping
     public ResponseEntity<?>getFeeds(){
         List<PostResponse> allFeeds = postService.findAllFeeds();
-        return ResponseEntity.ok().body(allFeeds);
+        return ResponseEntity
+                .ok()
+                .body(allFeeds);
     }
 
     // 피드 생성 요청
@@ -62,8 +64,6 @@ public class PostController {
                 "message","save success"
 
         );
-
-
 
         return ResponseEntity
                 .ok()

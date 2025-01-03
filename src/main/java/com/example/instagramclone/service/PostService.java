@@ -20,8 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostService {
 
-    private final PostRepository postRepository;
-     private final FileUploadUtil fileUploadUtil;
+    private final PostRepository postRepository; // db에 피드내용 저장, 이미지 저장
+     private final FileUploadUtil fileUploadUtil; // 로컬서버에 이미지 저장
 
      // 피드 목록조회 중간처리
     public List<PostResponse> findAllFeeds() {
@@ -63,14 +63,16 @@ public class PostService {
 
     // 피드 생성 DB 가기 전 후 중간처리
     public Long createFeed(PostCreate postCreate) {
+
+        // entity 변환
         Post post = postCreate.toEntity();
 
         // 피드 게시물을 posts 테이블에 insert
         postRepository.saveFeed(post);
 
-
+        // 이미지 관련 처리를 모두 수행
         Long postId = post.getId();
-        processImages(postCreate.getImages(), postId); // 이미지 관련 처리를 모두 수행
+        processImages(postCreate.getImages(), postId);
 
         // 컨트롤러에게 결과 반환
         return postId;
