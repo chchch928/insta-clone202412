@@ -8,6 +8,9 @@ let currentStep = 1;
 let step2Carousel = null;
 let step3Carousel = null;
 
+// 선택한 이미지 파일들을 전역관리
+let selectedFiles = null;
+
 // 피드 생성 모달을 전역관리
 const $modal = document.getElementById('createPostModal');
 
@@ -26,7 +29,69 @@ const elements = {
     $nestedModal: $modal.querySelector('.nested-modal'),
     $deleteBtn: $modal.querySelector('.delete-button'),
     $cancelBtn: $modal.querySelector('.cancel-button'),
+    $loadingSpinner: $modal.querySelector('.loading-spinner'),
 };
+
+// 로딩 스피너 처리
+function setLoading (loading = false){
+    const {$loadingSpinner, $backStepBtn, $nextStepBtn} = elements
+
+    $loadingSpinner.style.display = loading ? 'block' : 'none';
+    $backStepBtn.style.visibility = loading ? 'hidden' : 'visible';
+    $nextStepBtn.style.display = loading ? 'none' : 'block';
+
+    $nextStepBtn.disabled = loading;
+}
+// API 서버에 피드의 내용과 이미지들을 전송
+async function fetchFeed(){
+    if(currentStep !== 3)return;
+
+    const {$contentTextarea} = elements
+
+    // 작성자 이름과 피드내용을 전송
+    const feedData = {
+        writer :'임시사용자',
+        content : $contentTextarea.value.trim()
+    };
+
+
+
+    // JSON과 이미지를 같이 전송하려면 form-data가 필요함
+    const formData = new FormData();
+    formData.append('feed',new Blob([JSON.stringify(feedData)], {
+        type:'application/json'
+    })); // JSON 넣기
+
+   // 이미지 전송
+    selectedFiles.forEach(file =>{
+        formData.append('images',file);
+    });
+
+    setLoading(true); // 로딩 상태 활성화
+
+    setTimeout(async() =>{
+        // 서버에 POST 요청 전송
+    const response = await fetch('/api/posts', {
+        method: 'POST',
+        body : formData
+    });
+
+    const data = await response.json();
+
+    if(response.ok) {
+        window.location.reload() // 피드 새로고침
+    }
+    else{
+        console.error('fail to request');
+        alert(data.message)
+    }
+    setLoading(false);
+    },1500)
+
+
+
+
+}
 
 // 모달 바디 스텝을 이동하는 함수
 function goToStep(step) {
@@ -92,6 +157,9 @@ function setUpFileUploadEvents() {
 
         // 파일이 이미지인지 확인
         const validFiles = validateFiles(files);
+
+        //서버 전송을 위해
+        selectedFiles = validFiles;
 
         // 이미 생성되어 있다면, 그냥 init()만 다시 호출해서 '슬라이드 목록'만 업데이트
         if (step2Carousel && step3Carousel) {
@@ -194,8 +262,7 @@ function setUpModalEvents() {
         if (currentStep < 3) {
             goToStep(currentStep + 1);
         } else {
-            alert('서버로 게시물을 공유합니다.');
-            // 차후에 서버 AJAX 통신 구현...
+            fetchFeed(); // 서버에 요청 전송
         }
     });
 }
