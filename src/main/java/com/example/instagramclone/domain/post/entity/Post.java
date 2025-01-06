@@ -1,9 +1,9 @@
 package com.example.instagramclone.domain.post.entity;
 
-import jakarta.validation.constraints.Email;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter @Setter @ToString
 @EqualsAndHashCode
@@ -18,4 +18,6 @@ public class Post {
     private int viewCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<PostImage> images;
+
 }

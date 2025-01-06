@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PostHashTag {
+public class PostHashtag {
 
     private Long id;
     private Long postId;
-    private Long hashTagId;
+    private Long hashtagId;
     private LocalDateTime createdAt ;
 }
