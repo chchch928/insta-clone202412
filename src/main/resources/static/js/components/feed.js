@@ -1,6 +1,6 @@
 
 
-import CarouselManager from "../ui/CarouselManager";
+import CarouselManager from "../ui/CarouselManager.js";
 
 // 피드가 들어갈 전체영역
 const $feedContainer = document.querySelector('.feed-container')
@@ -11,6 +11,58 @@ async function fetchFeeds(){
     if(!response.ok) alert('피드목록을 불러오는데 실패했습니다.')
     return await response.json();
 }
+
+// 피드의 날짜를 조작
+function formatDate(dateString){
+    // 날짜 문자열을 날짜객체로 변환
+    const date = new Date(dateString);
+
+    // 현재 시간을 구함
+    const now = new Date();
+
+    // 두 시간 사이 값을 구함
+    const diff = Math.floor((now - date) / 1000);
+
+    if(diff < 60) return '방금 전';
+    if(diff < 60 * 60) return `${Math.floor(diff/60)}분 전`
+    if(diff < 60 * 60 * 24) return `${Math.floor(diff/(60*60))}시간 전`
+    if(diff < 60 * 60 * 24 *7) return `${Math.floor(diff/(60*60*24))}일 전`
+
+    return new Intl.DateTimeFormat(
+        'ko-KR',
+        {
+            year:'numeric',
+            month:'long',
+            day: 'numeric'
+        }
+    ).format(date)
+
+}
+
+// 텍스트 길이에 따른 더보기 처리 함수
+function truncateContent(writer, content, maxLength = 20) {
+    // 1. 먼저 텍스트 길이 체크
+    if (content.length <= maxLength) {
+        return `
+      <a href="#" class="post-username">${writer}</a>
+      <span class="post-caption">${content}</span>
+    `;
+    }
+
+    // 2. 긴 텍스트의 경우 처리
+    const truncatedContent = content.substring(0, maxLength);
+
+    return `
+    <a href="#" class="post-username">${writer}</a>
+    <span class="post-caption post-caption-truncated">
+      <span class="truncated-text">${truncatedContent}...</span>
+      <span class="full-text" style="display: none;">${content}</span>
+    </span>
+    <button class="more-button">더 보기</button>
+  `;
+}
+
+
 // 한개의 피드를 렌더링하는 함수
 function createFeedItem({writer, content, images, createdAt}){
     const makeImageTags = (images) => {
@@ -92,11 +144,11 @@ function createFeedItem({writer, content, images, createdAt}){
       <div class="post-content">
         <div class="post-text">
             <!--     피드 내용     -->
-            ${content}
+            ${truncateContent(writer,content)}
         </div>
         <div class="post-time">
             <!--      피드 생성 시간      -->
-            ${createdAt}
+            ${formatDate(createdAt)}
         </div>
       </div>
       
@@ -125,7 +177,7 @@ async function renderFeed(){
     const $carouselContainerList = [...document.querySelectorAll('.carousel-container')];
 
     // 2. 각각 캐러셀매니저를 걸어줌
-    $caroulselContainerList.forEach($carousel => {
+    $carouselContainerList.forEach($carousel => {
 
         // 이미지가 단 한개인 슬라이드에서는 이전, 다음버튼이 없어서 에러가 나는 상황
         const $images = [...$carousel.querySelectorAll('.carousel-track img')];
@@ -138,6 +190,23 @@ async function renderFeed(){
             carouselManager.initWithImgTag($images);
         }
     });
+
+    // 더보기 버튼 이벤트 처리
+    const $moreButtons = [...document.querySelectorAll('.more-button')];
+
+    $moreButtons.forEach($btn => {
+        $btn.addEventListener('click', e => {
+            const $captionDiv = $btn.closest('.post-text');
+            const $truncatedSpan = $captionDiv.querySelector('.truncated-text');
+            const $fullSpan = $captionDiv.querySelector('.full-text');
+
+            if ($truncatedSpan && $fullSpan) {
+                $truncatedSpan.style.display = 'none';
+                $fullSpan.style.display = 'inline';
+            }
+            $btn.style.display = 'none';
+        })
+    })
 }
 
 
