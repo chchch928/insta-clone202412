@@ -1,7 +1,7 @@
 package com.example.instagramclone.service;
 
-import com.example.instagramclone.domain.hashtag.entity.Hashtag;
-import com.example.instagramclone.domain.hashtag.entity.PostHashtag;
+import com.example.instagramclone.domain.member.entity.Hashtag;
+import com.example.instagramclone.domain.member.entity.PostHashtag;
 import com.example.instagramclone.domain.post.dto.request.PostCreate;
 import com.example.instagramclone.domain.post.dto.response.PostResponse;
 import com.example.instagramclone.domain.post.entity.Post;

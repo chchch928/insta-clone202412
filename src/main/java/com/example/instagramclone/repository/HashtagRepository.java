@@ -1,8 +1,8 @@
 package com.example.instagramclone.repository;
 
 import com.example.instagramclone.domain.hashtag.dto.response.HashtagSearchResponse;
-import com.example.instagramclone.domain.hashtag.entity.Hashtag;
-import com.example.instagramclone.domain.hashtag.entity.PostHashtag;
+import com.example.instagramclone.domain.member.entity.Hashtag;
+import com.example.instagramclone.domain.member.entity.PostHashtag;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
