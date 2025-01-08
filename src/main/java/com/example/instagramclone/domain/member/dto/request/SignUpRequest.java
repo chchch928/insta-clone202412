@@ -37,7 +37,7 @@ public class SignUpRequest {
             email = this.emailOrPhone;
         }else{
             // 010-1234-5678 => 전화번호에 있는 특수기호를 모두 제거
-            phone = this.emailOrPhone.replaceAll("[^0-9]]", "");
+            phone = this.emailOrPhone.replaceAll("[^0-9]", "");
         }
 
         return Member.builder()
