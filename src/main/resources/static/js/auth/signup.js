@@ -1,5 +1,6 @@
 
 import {ValidationRules} from "./validation.js";
+import {debounce} from "../util/debounce.js";
 
 // 회원가입 정보를 서버에 전송하기
 async function fetchToSignUp(userData){
@@ -29,9 +30,12 @@ function initSignUp(){
         password: $form.querySelector('input[name ="password"]'),
     };
 
+    // 디바운스가 걸린 validateField 함수
+    const debouncedValidate = debounce(validateField,700);
+
     const handleInput = ($input) => {
         removeErrorMessage($input.closest('.form-field'));
-        validateField($input);
+        debouncedValidate($input);
     }
 
     // 4개의 입력창에 입력 이벤트 바인딩
@@ -71,18 +75,27 @@ function initSignUp(){
 // 입력값을 검증하고 에러메시지를 렌더링하는 함수
 function validateField($input) {
 
-    // 1. 빈 값 체크
     // 이게 어떤태그인지 알아오기
     const fieldName = $input.name;
     // 입력값 읽어오기
-    const inputValue = $input.value;
+    const inputValue = $input.value.trim();
     // input의 부모 가져오기
     const $formField = $input.closest('.form-field');
 
+    // 1. 빈 값 체크
     if (!inputValue) {
         // console.log(fieldName, ' is empty!');
         // 여기서 사용한 ?는 null이 아닐때 가져오게 한다.
         showError($formField,ValidationRules[fieldName]?.requiredMessage); // 에러메세지 렌더링
+    }else{
+        // 2. 상세체크 (패턴검증, 중복검증)
+        //2-1 이메일, 전화번호 검증
+        if(fieldName === 'email') {
+            validateEmailOrPhone($formField,inputValue)
+        }else if(fieldName === 'password'){
+
+        }
+
     }
 
 }
@@ -105,6 +118,29 @@ function removeErrorMessage($formField) {
     if (error) error.remove();
 }
 
+// 이메일 또는 전화번호를 상세검증
+function validateEmailOrPhone($formField, inputValue) {
+
+    // 이메일 체크
+    if (inputValue.includes('@')) {
+        if (!ValidationRules.email.pattern.test(inputValue)) { // 패턴 체크
+            showError($formField, ValidationRules.email.message);
+        } else { // 서버에 통신해서 중복체크
+
+        }
+    } else {
+        // 전화번호  체크
+        // 전화번호 처리(숫자만 추출)
+        const numbers = inputValue.replace(/[^0-9]/g, '');
+        if (!ValidationRules.phone.pattern.test(numbers)) {
+            // 패턴 체크
+            showError($formField, ValidationRules.phone.message);
+        } else {
+            // 서버에 통신해서 중복체크
+        }
+    }
+
+}
 
 
 //==============메인 실행 코드=================//
