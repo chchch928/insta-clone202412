@@ -1,6 +1,7 @@
 
 
 import CarouselManager from "../ui/CarouselManager.js";
+import { fetchWithAuth } from "../util/api.js";
 
 // 피드가 들어갈 전체영역
 const $feedContainer = document.querySelector('.feed-container')
@@ -8,16 +9,8 @@ const $feedContainer = document.querySelector('.feed-container')
 // 피드를 서버로부터 불러오는 함수
 async function fetchFeeds(){
 
-    // 토큰 가져오기
-    const token = localStorage.getItem('accessToken')
-
     // 서버 요청 시 토큰을 헤더에 포함해서 요청해야 함
-    const response = await fetch('/api/posts',{
-        method: 'GET',
-        headers:{
-            'Authorization': `Bearer ${token}`
-        }
-    });
+    const response = await fetchWithAuth('/api/posts');
     if(!response.ok) alert('피드목록을 불러오는데 실패했습니다.')
     return await response.json();
 }
