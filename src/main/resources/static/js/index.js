@@ -3,7 +3,7 @@
 import initStories from './components/stories.js';
 import initCreateFeedModal from './components/create-feed-modal.js';
 import initFeed from './components/feed.js';
-import initMoreMenu from './components/more-menu.js'
+import initMoreMenu from './components/more-menu.js';
 
 
 // 모든 태그가 렌더링되면 실행됨

@@ -1,6 +1,6 @@
 // src/main/resources/static/js/components/more-menu.js
 
-import{fetchWithAuth} from "../util/api.js";
+import { fetchWithAuth } from "../util/api.js";
 
 // 서버에 로그아웃 요청 보내기
 async function handleLogout() {
