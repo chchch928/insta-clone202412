@@ -46,7 +46,6 @@ public class PostResponse {
     public static PostResponse from(Post feed) {
         return PostResponse.builder()
                 .id(feed.getId())
-                .writer(feed.getWriter())
                 .content(feed.getContent())
                 .images(
                         feed.getImages()
