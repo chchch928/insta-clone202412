@@ -1,5 +1,6 @@
 package com.example.instagramclone.domain.post.entity;
 
+import com.example.instagramclone.domain.member.entity.Member;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -19,5 +20,6 @@ public class Post {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<PostImage> images;
+    private Member member;
 
 }

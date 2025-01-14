@@ -5,6 +5,7 @@ import initCreateFeedModal from './components/create-feed-modal.js';
 import initFeed from './components/feed.js';
 import initMoreMenu from './components/more-menu.js';
 import initSuggestions from './components/suggestions.js'
+import initSideBar from './components/side-bar.js'
 
 // 모든 태그가 렌더링되면 실행됨
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,4 +14,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initFeed(); // 피드목록 렌더링 관련 js
   initMoreMenu();
   initSuggestions();
+  initSideBar();
 });

@@ -35,4 +35,11 @@ public class RouteController {
         return "auth/signup";
     }
 
+
+    // 프로필 페이지 열기
+    @GetMapping("/{username}")
+    public String profilePage(){
+        return "components/profile-page";
+    }
+
 }

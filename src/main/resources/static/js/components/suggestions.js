@@ -14,6 +14,8 @@ async function renderMe() {
         if ($profileImg) {
             $profileImg.src = currentUser.profileImageUrl ?? '/images/default-profile.svg';
             $profileImg.alt = `${currentUser.username}의 프로필 이미지`;
+            // 프로필 페이지 링크
+            $profileImg.setAttribute('href', `/${currentUser.username}`)
         }
 
         // 사용자명과 실제 이름 업데이트
@@ -21,6 +23,8 @@ async function renderMe() {
         const $name = $user.querySelector('.name');
 
         $username.textContent = currentUser.username;
+        $username.setAttribute('href', `/${currentUser.username}`)
+
         $name.textContent = currentUser.name;
 
     }
