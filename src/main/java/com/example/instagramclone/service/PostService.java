@@ -63,7 +63,7 @@ public class PostService {
         Post post = postCreate.toEntity();
 
         // 사용자의 ID를 세팅해줘야함
-        post.setMemberId(13L);
+        post.setMemberId(foundMember.getId());
 
         // 피드게시물을 posts테이블에 insert
         postRepository.saveFeed(post);
