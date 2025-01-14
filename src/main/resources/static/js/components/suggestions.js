@@ -15,7 +15,7 @@ async function renderMe() {
             $profileImg.src = currentUser.profileImageUrl ?? '/images/default-profile.svg';
             $profileImg.alt = `${currentUser.username}의 프로필 이미지`;
             // 프로필 페이지 링크
-            $profileImg.setAttribute('href', `/${currentUser.username}`)
+            $profileImg.closest('.profile-image').setAttribute('href', `/${currentUser.username}`)
         }
 
         // 사용자명과 실제 이름 업데이트
