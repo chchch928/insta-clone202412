@@ -73,6 +73,50 @@ async function initProfileHeader() {
     renderProfileHeader(profileHeader);
 }
 
+function renderProfileFeeds(feedList) {
+    const $gridContainer = document.querySelector('.posts-grid');
+
+    // 그리드 아이템 HTML 생성
+    $gridContainer.innerHTML = feedList
+        .map(
+            (feed) => `
+            <div class="grid-item" data-post-id="${feed.id}">
+                <img src="${feed.mainThumbnail}" alt="게시물 이미지">
+                <div class="grid-item-overlay">
+                    <div class="grid-item-stats">
+                        <span>
+                            <i class="fa-solid fa-heart"></i> 0
+                        </span>
+                        <span>
+                            <i class="fa-solid fa-comment"></i> 0
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `
+        )
+        .join('');
+}
+
+async function initProfileFeeds() {
+
+    const username = getPageUsername();
+    const response = await fetchWithAuth(`/api/profiles/${username}/posts`)
+
+    if(!response.ok){
+        alert('프로필 피드를 불러오는데 실패했습니다.')
+        return;
+    }
+    const feedList = await response.json();
+
+    // 피드 렌더링 업데이트
+    renderProfileFeeds(feedList);
+}
+
+
+
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -83,4 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //===== 프로필 페이지 개별 처리 ===== //
     initProfileHeader(); // 프로필 페이지 헤더 관련
+
+
+    initProfileFeeds(); // 프로필 페이지 피드 관련
 });
