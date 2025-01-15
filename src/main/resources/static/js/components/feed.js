@@ -109,7 +109,9 @@ function createFeedItem({username,profileImageUrl ,content, images, createdAt}){
             <!--     이미지 목록 배치      -->
             ${images.map(image =>`
                 <img src = "${image.imageUrl}" alt = "feed image${image.imageOrder}">
-            `).join('')}
+            `
+    )
+        .join('')}
             
           </div>
           ${images.length > 1 ? `
