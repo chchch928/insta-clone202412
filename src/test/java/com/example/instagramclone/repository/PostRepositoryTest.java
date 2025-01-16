@@ -2,19 +2,15 @@ package com.example.instagramclone.repository;
 
 import com.example.instagramclone.domain.post.entity.Post;
 import com.example.instagramclone.domain.post.entity.PostImage;
-import org.assertj.core.api.AbstractLongAssert;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest // 스프링이 관리하고 있는 빈들을 모두 불러옴
 @Transactional
@@ -34,7 +30,6 @@ class PostRepositoryTest {
         // given - 테스트를 위해 주어지는 데이터
         Post givenPost = Post.builder()
                 .content("테스트 컨텐츠 입니다")
-                .writer("임시 작성자")
                 .build();
 
         // when - 실제 실행될 테스트 핵심 코드
@@ -57,7 +52,6 @@ class PostRepositoryTest {
         for(int i = 0; i<3; i++){
             Post givenPost = Post.builder()
                     .content("테스트 컨텐츠 입니다" + i)
-                    .writer("임시작성자" + i)
                     .build();
 
             postRepository.saveFeed(givenPost);
@@ -72,7 +66,6 @@ class PostRepositoryTest {
         feedList.forEach(System.out::println);
 
         assertThat(feedList.size()).isEqualTo(3);
-        assertThat(feedList.get(0).getWriter()).isEqualTo("임시작성자2");
 
     }
     @Test
@@ -84,7 +77,6 @@ class PostRepositoryTest {
         //given
         // 피드를 한개 생성
         Post feed = Post.builder()
-                .writer("도날드덕")
                 .content("꽥!")
                 .build();
 
@@ -117,6 +109,17 @@ class PostRepositoryTest {
         assertThat(imageList.get(0).getImageOrder()).isEqualTo(1);
         assertThat(imageList.get(1).getImageUrl()).contains("second");
 
+    }
+
+    @Test
+    @DisplayName("단일 피드를 조회하면 피드의 내용, 작성자정보, 피드이미지들이 조회된다.")
+    void detailFeedTest() {
+        //given
+        Long postId = 59L;
+        //when
+        Post post = postRepository.findPostDetailById(postId).orElseThrow();
+        //then
+        System.out.println("post = " + post);
     }
 
 }
