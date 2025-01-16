@@ -21,6 +21,6 @@ public interface MemberRepository {
     // Mybatis는 파라미터가 2개 이상인 경우 @Param 이노테이션을 붙여야 함
     void updateProfileImage(
             @Param("imageUrl") String imageUrl,
-            @Param("Username") String username);
+            @Param("username") String username);
 
 }

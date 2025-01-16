@@ -60,8 +60,7 @@ public class ProfileController {
 
         return ResponseEntity.ok().body(Map.of(
                 "imageUrl", imageUrl,
-                "message", "profile upload successful" +
-                        ""
+                "message", "profile upload successful"
         ));
     }
 
