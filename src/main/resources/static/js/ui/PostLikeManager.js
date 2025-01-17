@@ -36,6 +36,9 @@ class PostLikeManager {
             // console.log(likeStatus);
             this.updateUI(likeStatus);
         };
+        // 더블 클릭 이벤트 바인딩
+        this.addDoubleClickLike();
+
     }
 
     // 좋아요 UI처리
@@ -54,8 +57,25 @@ class PostLikeManager {
         if ($gridItem) {
             $gridItem.querySelector('.grid-likes-count').textContent = likeCount;
         }
-
     }
+    // 더블클릭 좋아요 기능
+    addDoubleClickLike() {
+        // 캐러셀 컨테이너에 더블클릭 이벤트 바인딩
+        const $carousel = this.$container.querySelector('.carousel-container');
+        $carousel.ondblclick = () => {
+            this.$likeButton.click();
+            // 하트 애니메이션 표시
+            const $heartAnimation = document.createElement('div');
+            $heartAnimation.classList.add('heart-animation');
+            $heartAnimation.innerHTML = '<i class="fa-solid fa-heart"></i>';
+            $carousel.append($heartAnimation);
+            // 1초 후 애니메이션이 끝나면 하트 박스 삭제
+            setTimeout(() => {
+                $heartAnimation.remove();
+            }, 1000);
+        };
+    }
+
 
 }
 
