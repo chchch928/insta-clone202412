@@ -9,6 +9,7 @@ const $profileImageContainer = document.querySelector(
     '.profile-image-container'
 );
 
+
 // 이 페이지의 사용자 이름 추출
 function getPageUsername() {
     // URL에서 가져와야 함
@@ -78,7 +79,9 @@ async function initProfileHeader() {
     renderProfileHeader(profileHeader);
 }
 
+
 function renderProfileFeeds(feedList) {
+
     const $gridContainer = document.querySelector('.posts-grid');
 
     // 그리드 아이템 HTML 생성
@@ -90,10 +93,12 @@ function renderProfileFeeds(feedList) {
                 <div class="grid-item-overlay">
                     <div class="grid-item-stats">
                         <span>
-                            <i class="fa-solid fa-heart"></i> 0
+                            <i class="fa-solid fa-heart"></i> 
+                            <span class="grid-likes-count">${feed.likeCount}</span>
                         </span>
                         <span>
-                            <i class="fa-solid fa-comment"></i> 0
+                            <i class="fa-solid fa-comment"></i>
+                            <span class="grid-comments-count">${feed.commentCount}</span>
                         </span>
                     </div>
                 </div>
@@ -103,25 +108,30 @@ function renderProfileFeeds(feedList) {
         .join('');
 }
 
+
+// 프로필 페이지 피드 목록 렌더링 (메인 썸네일, 좋아요 수, 댓글 수 등)
 async function initProfileFeeds() {
 
     const username = getPageUsername();
-    const response = await fetchWithAuth(`/api/profiles/${username}/posts`)
+    const response = await fetchWithAuth(`/api/profiles/${username}/posts`);
 
-    if(!response.ok){
-        alert('프로필 피드를 불러오는데 실패했습니다.')
+    if (!response.ok) {
+        alert('프로필 피드를 불러오는 데 실패했습니다.');
         return;
     }
+
     const feedList = await response.json();
 
     // 피드 렌더링 업데이트
     renderProfileFeeds(feedList);
+
 }
 
-
+// 서버로 프로필 사진 전송
 async function handleProfileImage(e) {
+    // console.log('file selected!!', e.target);
 
-    if(!e.target.files.length) return;
+    if (!e.target.files.length) return;
 
     const uploadProfileImage = e.target.files[0];
 
@@ -139,33 +149,29 @@ async function handleProfileImage(e) {
 
     // 폼데이터 생성해서 이미지 담기
     const formData = new FormData();
-    formData.append('profileImage', uploadProfileImage)
+    formData.append('profileImage', uploadProfileImage);
 
     // 서버에 프사 전송하기
-    const response = await fetchWithAuth(`/api/profiles/profile-image`,{
+    const response = await fetchWithAuth(`/api/profiles/profile-image`, {
         method: 'PUT',
-        body : formData
+        body: formData
     });
 
     if (!response.ok) {
-        alert('프로필 사진 업데이트 실패');
+        alert('프로필 사진 업데이트 실패!');
         return;
     }
 
-    const {  imageUrl } = await response.json();
-
+    const { imageUrl } = await response.json();
     const $img = $profileImageContainer.querySelector('img');
     $img.src = imageUrl;
 
-
-
-
 }
 
+// 프로필 사진 업데이트 처리
 async function initChangeProfileImage() {
 
-    const $fileInput = document.querySelector('input[name=profileImage]')
-
+    const $fileInput = document.querySelector('input[name=profileImage]');
     // 0. 본인 페이지가 아니면 나가세요
     const match = await isUserMatched();
 
@@ -175,13 +181,12 @@ async function initChangeProfileImage() {
         return;
     }
 
-    // 1. 사용자는 자신의 프로필 사진 박스를 클릭한다
-    // 2. 이걸 클릭하면 파일 선택창이 떠야함
-    $profileImageContainer.addEventListener('click', () =>{
+    // 1. 사용자는 자신의 프로필 사진 박스를 클릭한다.
+
+    // 2. 이걸 클릭하면 파일 선택창이 떠야함.
+    $profileImageContainer.addEventListener('click', () => {
         $fileInput.click();
-
     });
-
     // 3. 파일 선택 완료시 서버로 프로필 이미지 전송
     $fileInput.addEventListener('change', handleProfileImage);
 }
@@ -195,7 +200,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //===== 프로필 페이지 개별 처리 ===== //
     initProfileHeader(); // 프로필 페이지 헤더 관련
-    initProfileFeeds(); // 프로필 페이지 피드 관련
-    initChangeProfileImage(); // 프로필 이미지 변경 관련
-    initFeedDetailModal(); // 상세보기 모달 관련
+    initProfileFeeds();  // 프로필 페이지 피드 관련
+    initChangeProfileImage(); // 프사 변경 관련
+    initFeedDetailModal();  // 상세보기 모달 관련
+
 });

@@ -61,7 +61,7 @@ public class ProfileService {
     public List<ProfilePostResponse> findProfilePosts(String username) {
         Member foundMember = getMember(username);
 
-        return postRepository.findProfilePosts(foundMember.getId());
+        return postRepository.findProfilePosts(getMember(username).getId());
     }
 
     private Member getMember(String username) {

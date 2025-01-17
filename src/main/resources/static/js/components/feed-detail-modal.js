@@ -81,6 +81,7 @@ function renderModalContent({ postId, content, createdAt, user, images, likeStat
     const $likeButton = $modal.querySelector('.like-button');
     const $heartIcon = $modal.querySelector('.like-button i');
     const $likeCount = $modal.querySelector('.likes-count');
+
     $likeButton.classList.toggle('liked', liked);
     $heartIcon.className = liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
     $likeCount.textContent = likeCount;
