@@ -1,54 +1,54 @@
 
-
 import CarouselManager from "../ui/CarouselManager.js";
-import { fetchWithAuth } from "../util/api.js";
 import PostLikeManager from "../ui/PostLikeManager.js";
-
+import { fetchWithAuth } from "../util/api.js";
 
 // 피드가 들어갈 전체영역
-const $feedContainer = document.querySelector('.feed-container')
+const $feedContainer = document.querySelector('.feed-container');
 
 // 피드를 서버로부터 불러오는 함수
-async function fetchFeeds(){
+async function fetchFeeds() {
 
-    // 서버 요청 시 토큰을 헤더에 포함해서 요청해야 함
+    // 서버 요청시 토큰을 헤더에 포함해서 요청해야 함
     const response = await fetchWithAuth('/api/posts');
-    if(!response.ok) alert('피드목록을 불러오는데 실패했습니다.')
+    if (!response.ok) alert('피드 목록을 불러오는데 실패했습니다.');
     return await response.json();
 }
 
 // 해시태그만 추출해서 링크로 감싸기
 export function convertHashtagsToLinks(content) {
     // #으로 시작하고 공백이나 줄바꿈으로 끝나는 문자열 찾기
-    return content.replace(/#[\w가-힣]+/g, match =>
-        `<a href="#" class="hashtag">${match}</a>`
+    return content.replace(
+        /#[\w가-힣]+/g,
+        (match) => `<a href="#" class="hashtag">${match}</a>`
     );
 }
 
+
 // 피드의 날짜를 조작
-export function formatDate(dateString){
-    // 날짜 문자열을 날짜객체로 변환
+export function formatDate(dateString) {
+    // 날짜문자열을 날짜객체로 변환
     const date = new Date(dateString);
 
-    // 현재 시간을 구함
+    // 현재시간을 구함
     const now = new Date();
 
     // 두 시간 사이 값을 구함
     const diff = Math.floor((now - date) / 1000);
 
-    if(diff < 60) return '방금 전';
-    if(diff < 60 * 60) return `${Math.floor(diff/60)}분 전`
-    if(diff < 60 * 60 * 24) return `${Math.floor(diff/(60*60))}시간 전`
-    if(diff < 60 * 60 * 24 *7) return `${Math.floor(diff/(60*60*24))}일 전`
+    if (diff < 60) return '방금 전';
+    if (diff < 60 * 60) return `${Math.floor(diff / 60)}분 전`;
+    if (diff < 60 * 60 * 24) return `${Math.floor(diff / (60 * 60))}시간 전`;
+    if (diff < 60 * 60 * 24 * 7) return `${Math.floor(diff / (60 * 60 * 24))}일 전`;
 
     return new Intl.DateTimeFormat(
         'ko-KR',
         {
-            year:'numeric',
-            month:'long',
+            year: 'numeric',
+            month: 'long',
             day: 'numeric'
         }
-    ).format(date)
+    ).format(date);
 
 }
 
@@ -77,17 +77,21 @@ function truncateContent(writer, content, maxLength = 20) {
 
 
 // 한개의 피드를 렌더링하는 함수
-function createFeedItem({ feed_id:feedId, username,profileImageUrl ,content, images, createdAt}){
-    const makeImageTags = (images) => {
-        let imgTag = '';
-        for (const img of images){
-            imgTag += `<img src = "${img.imageUrl}">`
-        }
-        return imgTag;
-    }
+function createFeedItem({ feed_id: feedId, username, profileImageUrl, content, images, createdAt, likeStatus }) {
+
+
+    const { liked, likeCount } = likeStatus;
+
+    // const makeImageTags = (images) => {
+    //   let imgTag = '';
+    //   for (const img of images) {
+    //     imgTag += `<img src="${img.imageUrl}">`;
+    //   }
+    //   return imgTag;
+    // };
 
     return `
-            <article class="post" data-post-id ="${feedId}">
+    <article class="post" data-post-id="${feedId}">
       <div class="post-header">
         <div class="post-user-info">
           <div class="post-profile-image">
@@ -109,14 +113,17 @@ function createFeedItem({ feed_id:feedId, username,profileImageUrl ,content, ima
         <div class="carousel-container">
           <div class="carousel-track">
             <!--     이미지 목록 배치      -->
-            ${images.map(image =>`
-                <img src = "${image.imageUrl}" alt = "feed image${image.imageOrder}">
-            `
-    )
+            ${images
+        .map(
+            (image) => `
+                <img src="${image.imageUrl}" alt="feed image${image.imageOrder}">
+              `
+        )
         .join('')}
-            
           </div>
-          ${images.length > 1 ? `
+          ${
+        images.length > 1
+            ? `
             <button class="carousel-prev">
               <i class="fa-solid fa-chevron-left"></i>
             </button>
@@ -125,19 +132,25 @@ function createFeedItem({ feed_id:feedId, username,profileImageUrl ,content, ima
             </button>
             <div class="carousel-indicators">
                 <!--        인디케이터 렌더링        -->
-                ${images.map((_, i) => `
-                  <span class="indicator ${i === 0 ? 'active': ''}"></span>
-                `).join('')}
+                ${images
+                .map(
+                    (_, i) => `
+                  <span class="indicator ${i === 0 ? 'active' : ''}"></span>
+                `
+                )
+                .join('')}
             </div>
-          ` : ''}
+          `
+            : ''
+    }
         </div>
       </div>
       
       <div class="post-actions">
         <div class="post-buttons">
           <div class="post-buttons-left">
-            <button class="action-button like-button">
-              <i class="fa-regular fa-heart"></i>
+            <button class="action-button like-button ${liked ? 'liked' : ''}">
+              <i class="${liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
             </button>
             <button class="action-button comment-button">
               <i class="fa-regular fa-comment"></i>
@@ -151,7 +164,7 @@ function createFeedItem({ feed_id:feedId, username,profileImageUrl ,content, ima
           </button>
         </div>
         <div class="post-likes">
-          좋아요 <span class="likes-count">0</span>개
+          좋아요 <span class="likes-count">${likeCount}</span>개
         </div>
       </div>
       
@@ -159,7 +172,7 @@ function createFeedItem({ feed_id:feedId, username,profileImageUrl ,content, ima
       <div class="post-content">
         <div class="post-text">
             <!--     피드 내용     -->
-            ${truncateContent(username,content)}
+            ${truncateContent(username, content)}
         </div>
         <div class="post-time">
             <!--      피드 생성 시간      -->
@@ -174,25 +187,25 @@ function createFeedItem({ feed_id:feedId, username,profileImageUrl ,content, ima
         </form>
       </div>
     </article>
-            `;
+  `;
 }
 
 
-
 // 피드 렌더링 함수
-async function renderFeed(){
+async function renderFeed() {
     // 피드 데이터를 서버로부터 불러오기
     const feedList = await fetchFeeds();
+    console.log(feedList);
 
-    //feed html 생성
+    // feed html 생성
     $feedContainer.innerHTML = feedList.map((feed) => createFeedItem(feed)).join('');
 
     // 각 피드의 이미지 슬라이드에 각각 캐러셀 객체를 적용
     // 1. 피드의 모든 캐러셀 컨테이너를 가져옴
-    const $carouselContainerList = [...document.querySelectorAll('.carousel-container')];
+    const $caroulselContainerList = [...document.querySelectorAll('.carousel-container')];
 
     // 2. 각각 캐러셀매니저를 걸어줌
-    $carouselContainerList.forEach($carousel => {
+    $caroulselContainerList.forEach($carousel => {
 
         // 이미지가 단 한개인 슬라이드에서는 이전, 다음버튼이 없어서 에러가 나는 상황
         const $images = [...$carousel.querySelectorAll('.carousel-track img')];
@@ -206,10 +219,11 @@ async function renderFeed(){
         }
     });
 
-    // 더보기 버튼 이벤트 처리
+    // 더 보기 버튼 이벤트 처리
     const $moreButtons = [...document.querySelectorAll('.more-button')];
 
     $moreButtons.forEach($btn => {
+
         $btn.addEventListener('click', e => {
             const $captionDiv = $btn.closest('.post-text');
             const $truncatedSpan = $captionDiv.querySelector('.truncated-text');
@@ -220,20 +234,20 @@ async function renderFeed(){
                 $fullSpan.style.display = 'inline';
             }
             $btn.style.display = 'none';
-        })
+        });
+
     });
 
     // 모든 피드에 좋아요 매니저를 세팅
     $feedContainer.querySelectorAll('.post').forEach($feed => {
         new PostLikeManager($feed);
-    })
+    });
+
 }
 
 // 외부에 노출시킬 피드관련 함수
-function initFeed(){
+function initFeed() {
     renderFeed();
 }
-
-
 
 export default initFeed;

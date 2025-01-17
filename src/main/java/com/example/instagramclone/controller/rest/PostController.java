@@ -32,7 +32,7 @@ public class PostController {
     ){
         log.info("피드에서 생성된 생성자명 :{}",username);
 
-        List<PostResponse> allFeeds = postService.findAllFeeds();
+        List<PostResponse> allFeeds = postService.findAllFeeds(username);
         return ResponseEntity
                 .ok()
                 .body(allFeeds);

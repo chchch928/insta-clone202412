@@ -1,8 +1,9 @@
 package com.example.instagramclone.service;
 
-import com.example.instagramclone.domain.member.entity.Hashtag;
+import com.example.instagramclone.domain.hashtag.entity.Hashtag;
+import com.example.instagramclone.domain.hashtag.entity.PostHashtag;
+import com.example.instagramclone.domain.like.dto.response.LikeStatusResponse;
 import com.example.instagramclone.domain.member.entity.Member;
-import com.example.instagramclone.domain.member.entity.PostHashtag;
 import com.example.instagramclone.domain.post.dto.request.PostCreate;
 import com.example.instagramclone.domain.post.dto.response.PostDetailResponse;
 import com.example.instagramclone.domain.post.dto.response.PostResponse;
@@ -13,6 +14,7 @@ import com.example.instagramclone.exception.MemberException;
 import com.example.instagramclone.exception.PostException;
 import com.example.instagramclone.repository.HashtagRepository;
 import com.example.instagramclone.repository.MemberRepository;
+import com.example.instagramclone.repository.PostLikeRepository;
 import com.example.instagramclone.repository.PostRepository;
 import com.example.instagramclone.util.FileUploadUtil;
 import com.example.instagramclone.util.HashtagUtil;
@@ -34,37 +36,47 @@ public class PostService {
     private final PostRepository postRepository; // db에 피드내용 저장, 이미지저장
     private final HashtagRepository hashtagRepository; // 해시태그 db에 저장
     private final MemberRepository memberRepository; // 사용자 정보 가져오기
+    private final PostLikeRepository postLikeRepository; // 좋아요 정보 가져오기
 
     private final FileUploadUtil fileUploadUtil; // 로컬서버에 이미지 저장
     private final HashtagUtil hashtagUtil; // 해시태그 추출기
 
     // 피드 목록조회 중간처리
-    public List<PostResponse> findAllFeeds() {
+    @Transactional(readOnly = true)
+    public List<PostResponse> findAllFeeds(String username) {
+
+        Member foundMember = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
+
         // 전체 피드 조회
         return postRepository.findAll()
                 .stream()
                 .map(feed -> {
-                    feed.setImages(postRepository.findImagesByPostId(feed.getId()));
-                    return PostResponse.from(feed);
+                    LikeStatusResponse likeStatus = LikeStatusResponse.of(
+                            postLikeRepository.findByPostIdAndMemberId(feed.getId(), foundMember.getId()).isPresent()
+                            , postLikeRepository.countByPostId(feed.getId())
+                    );
+                    return PostResponse.of(feed, likeStatus);
                 })
                 .collect(Collectors.toList());
     }
 
 
+
     // 피드 생성 DB에 가기 전 후 중간처리
     @Transactional
-    public Long createFeed(PostCreate postCreate,String username) {
+    public Long createFeed(PostCreate postCreate, String username) {
 
         // 유저의 이름을 통해 해당 유저의 ID를 구함
         Member foundMember = memberRepository.findByUsername(username)
                 .orElseThrow(
-                        ()-> new MemberException(ErrorCode.MEMBER_NOT_FOUND)
+                        () -> new MemberException(ErrorCode.MEMBER_NOT_FOUND)
                 );
 
         // entity 변환
         Post post = postCreate.toEntity();
 
-        // 사용자의 ID를 세팅해줘야함
+        // 사용자의 ID를 세팅해줘야 함 <- 이걸 어케구함?
         post.setMemberId(foundMember.getId());
 
         // 피드게시물을 posts테이블에 insert
@@ -93,12 +105,12 @@ public class PostService {
 
             // 일단 해시태그가 저장되어있는지 여부를 확인 - 조회해봄
             Hashtag foundHashtag = hashtagRepository.findByName(hashtagName)
-                    .orElseGet( () ->{
+                    .orElseGet(() -> {
                         Hashtag newHashtag = Hashtag.builder().name(hashtagName).build();
                         hashtagRepository.insertHashtag(newHashtag);
                         log.debug("new hashtag saved: {}", hashtagName);
                         return newHashtag;
-                    }) // 일단 조회해보고 없으면 (Null) 대체적으로 뭘할지
+                    }) // 일단 조회해보고 없으면(null)~~~ 대체적으로 뭘할지
                     ;
 
             // 3. 해시태그와 피드를 연결해서 연결테이블에 저장
@@ -147,7 +159,9 @@ public class PostService {
                 .orElseThrow(
                         () -> new PostException(ErrorCode.POST_NOT_FOUND)
                 );
+
         return PostDetailResponse.from(post);
     }
+
 
 }
