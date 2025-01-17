@@ -10,6 +10,10 @@ const $gridContainer = document.querySelector('.posts-grid');
 
 // 모달에 피드내용 렌더링
 function renderModalContent({ postId, content, createdAt, user, images }) {
+
+    // 모달이 렌더링될 때 현재 피드의 id를 모달태그에 발라놓음
+    $modal.dataset.postId = postId;
+
     const { username, profileImageUrl } = user;
 
     $modal.querySelectorAll('.post-username').forEach(($username) => {
@@ -73,6 +77,61 @@ function renderModalContent({ postId, content, createdAt, user, images }) {
 
 }
 
+function findAdjacentPostIds(currentId) {
+
+    // 현재 피드 아이디를 기준으로 양옆의 피드 id를 구해야함
+    const $currentGrid = document.querySelector(`.grid-item[data-post-id = "${currentId}"]`);
+    const $prevGrid = $currentGrid.previousElementSibling;
+    const $nextGrid = $currentGrid.nextElementSibling;
+
+    // ? - null체크 연산
+    const prevId = $prevGrid?.dataset.postId;
+    const nextId = $nextGrid?.dataset.postId
+
+   return{
+        prevId: prevId ? prevId : null,
+        nextId: nextId ? nextId : null,
+   }
+
+
+}
+
+// 이전, 다음 피드 업데이트 (조건부 렌더링, 서버에 새로운 피드 재요청)
+function updateFeedNavigation(currentId){
+    const $prevButton = $modal.querySelector('.modal-prev-button')
+    const $nextButton = $modal.querySelector('.modal-next-button')
+
+    // 현재 열려있는 피드 기준으로 이전, 다음피드가 있는지 체크하고
+    // 존재한다면 해당 피드들의 id 를 가져오도록 한다.
+    const {prevId, nextId } = findAdjacentPostIds(currentId);
+
+
+    // 조건부 렌더링 처리 (현재 렌더링 되어있는 피드가 첫피드인지 마지막 피드인지)
+    // 중첩모달을 방지하기 위해서 addeventListener가 아닌 프로퍼티를 통한 이벤트 핸들러 onclick 등록
+    if(prevId){ // 이전 버튼 처리
+        $prevButton.style.visibility = 'visible';
+        $prevButton.style.zIndex = '2'
+        $prevButton.onclick = () => openModal(prevId);
+
+    }else{
+        $prevButton.style.visibility ='hidden';
+        $prevButton.style.zIndex = '-100'
+    }
+
+    if (nextId) {
+        // 다음 버튼 처리
+        $nextButton.style.visibility = 'visible';
+        $nextButton.style.zIndex = '2';
+        $nextButton.onclick = () => openModal(nextId);
+
+    } else {
+        $nextButton.style.visibility = 'hidden';
+        $nextButton.style.zIndex = '-100';
+    }
+
+
+}
+
 // 모달 열기
 async function openModal(postId) {
 
@@ -90,6 +149,9 @@ async function openModal(postId) {
     // 화면에 렌더링
     renderModalContent(feedData);
 
+    // 이전,다음 피드 렌더링 처리
+    updateFeedNavigation(postId);
+
 
     // 모달 디스플레이 변경
     $modal.style.display = 'flex';
@@ -102,6 +164,23 @@ function closeModal() {
     // 모달 디스플레이 변경
     $modal.style.display = 'none';
     document.body.style.overflow = '';
+}
+
+// 키보드 네비게이션
+function handleKeyPress(e) {
+    if ($modal.style.display === 'none') return;
+
+    const currentPostId =$modal.dataset.postId;
+
+    const {prevId, nextId} = findAdjacentPostIds(currentPostId);
+
+    if (prevId && e.key === 'ArrowLeft') {
+        openModal(prevId);
+    } else if (nextId && e.key === 'ArrowRight') {
+        openModal(nextId);
+    } else if (e.key === 'Escape') {
+        closeModal();
+    }
 }
 
 function initFeedDetailModal() {
@@ -121,6 +200,9 @@ function initFeedDetailModal() {
     // 모달 닫기 이벤트
     $backdrop.addEventListener('click', closeModal);
     $closeButton.addEventListener('click', closeModal);
+
+    // 키보드 이벤트 리스너 등록
+    document.addEventListener('keydown', handleKeyPress);
 
 }
 
