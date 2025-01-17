@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="/css/modal.css">
     <link rel="stylesheet" href="/css/feed.css">
     <link rel="stylesheet" href="/css/feed-detail-modal.css">
+    <link rel="stylesheet" href="/css/like.css">
 
 
     <!-- JavaScript -->
