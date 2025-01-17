@@ -2,6 +2,8 @@
 
 import CarouselManager from "../ui/CarouselManager.js";
 import { fetchWithAuth } from "../util/api.js";
+import PostLikeManager from "../ui/PostLikeManager.js";
+
 
 // 피드가 들어갈 전체영역
 const $feedContainer = document.querySelector('.feed-container')
@@ -219,13 +221,19 @@ async function renderFeed(){
             }
             $btn.style.display = 'none';
         })
+    });
+
+    // 모든 피드에 좋아요 매니저를 세팅
+    $feedContainer.querySelectorAll('.post').forEach($feed => {
+        new PostLikeManager($feed);
     })
 }
-
-
 
 // 외부에 노출시킬 피드관련 함수
 function initFeed(){
     renderFeed();
 }
+
+
+
 export default initFeed;
