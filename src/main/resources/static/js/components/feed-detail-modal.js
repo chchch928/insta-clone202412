@@ -3,6 +3,7 @@ import { fetchWithAuth } from '../util/api.js';
 import { convertHashtagsToLinks, formatDate } from './feed.js';
 import CarouselManager from '../ui/CarouselManager.js';
 import PostLikeManager from "../ui/PostLikeManager.js";
+import { createComment } from "./comments.js";
 
 const $modal = document.querySelector('.post-detail-modal');
 const $backdrop = $modal.querySelector('.modal-backdrop');
@@ -31,8 +32,8 @@ function renderComments(comments) {
 }
 
 
-// 댓글 HTML 생성
-function createCommentHTML(comment) {
+// 댓글 하나의 HTML 생성
+export function createCommentHTML(comment) {
     return `
     <div class="comment-item">
       <div class="post-profile-image">
@@ -136,7 +137,8 @@ function renderModalContent({ postId, content, createdAt, user, images, likeStat
     // 댓글 목록 렌더링
     renderComments(comments);
 
-
+    //댓글 form이벤트 처리
+    createComment($modal.querySelector('.comment-form'));
 
 }
 
