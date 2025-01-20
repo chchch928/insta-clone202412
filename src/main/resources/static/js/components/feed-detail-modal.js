@@ -98,8 +98,8 @@ function findAdjacentPostIds(currentId) {
 
     // 현재 피드 아이디를 기준으로 양옆의 피드 id를 구해야함
     const $currentGrid = document.querySelector(`.grid-item[data-post-id = "${currentId}"]`);
-    const $prevGrid = $currentGrid.previousElementSibling;
-    const $nextGrid = $currentGrid.nextElementSibling;
+    const $prevGrid = $currentGrid?.previousElementSibling;
+    const $nextGrid = $currentGrid?.nextElementSibling;
 
     // ? - null체크 연산
     const prevId = $prevGrid?.dataset.postId;
@@ -150,7 +150,7 @@ function updateFeedNavigation(currentId){
 }
 
 // 모달 열기
-async function openModal(postId) {
+export async function openModal(postId) {
 
     // 서버에 데이터 요청
     const response = await fetchWithAuth(`/api/posts/${postId}`);
