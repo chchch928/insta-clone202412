@@ -2,6 +2,7 @@
 import CarouselManager from "../ui/CarouselManager.js";
 import PostLikeManager from "../ui/PostLikeManager.js";
 import { fetchWithAuth } from "../util/api.js";
+import {createComment} from "./comments.js";
 
 // 피드가 들어갈 전체영역
 const $feedContainer = document.querySelector('.feed-container');
@@ -77,7 +78,7 @@ function truncateContent(writer, content, maxLength = 20) {
 
 
 // 한개의 피드를 렌더링하는 함수
-function createFeedItem({ feed_id: feedId, username, profileImageUrl, content, images, createdAt, likeStatus }) {
+function createFeedItem({ feed_id: feedId, username, profileImageUrl, content, images, createdAt, likeStatus, commentCount }) {
 
 
     const { liked, likeCount } = likeStatus;
@@ -181,6 +182,17 @@ function createFeedItem({ feed_id: feedId, username, profileImageUrl, content, i
       </div>
       
       <div class="post-comments">
+      
+      <!-- 댓글이 있을 때만 버튼 표시 -->
+          ${commentCount > 0 ? `
+            <!-- 댓글 미리보기 -->
+            <div class="comments-preview">
+              <button class="view-comments-button">
+                댓글 ${commentCount}개 모두 보기
+              </button>
+            </div>` : ''}
+      
+      
         <form class="comment-form">
           <input type="text" placeholder="댓글 달기..." class="comment-input">
           <button type="submit" class="comment-submit-btn" disabled>게시</button>
@@ -238,9 +250,10 @@ async function renderFeed() {
 
     });
 
-    // 모든 피드에 좋아요 매니저를 세팅
+    // 모든 피드에 좋아요 매니저를 세팅, 댓글 등록 기능을 세팅
     $feedContainer.querySelectorAll('.post').forEach($feed => {
         new PostLikeManager($feed);
+        createComment($feed.querySelector('.comment-form'));
     });
 
 }
