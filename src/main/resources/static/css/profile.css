@@ -307,6 +307,45 @@
     font-size: 16px;
 }
 
+.follow-button,
+.following-button {
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+}
+
+
+.following-button i {
+    margin-left: 5px;
+    font-size: 10px;
+}
+
+.follow-button {
+    color: white;
+}
+
+.following-button {
+    background-color: #efefef;
+    color: #000;
+}
+
+.following-button.unfollow-hover {
+    background-color: #fdf2f2;
+    color: #dc2626;
+}
+
+/* 프로필 통계 스타일 추가 */
+.profile-stats .stats-number {
+    font-weight: 600;
+    margin-right: 4px;
+}
+
+
+
+
 /* ===============================
    모달 스타일
    =============================== */
@@ -375,6 +414,12 @@
         margin: 0 auto;
     }
 }
+
+
+
+
+
+
 
 /* 1264px 이하 반응형 처리 */
 @media (max-width: 1264px) {

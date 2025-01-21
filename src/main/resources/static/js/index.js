@@ -9,6 +9,7 @@ import initSideBar from './components/side-bar.js'
 import initFeedDetailModal from './components/feed-detail-modal.js'
 
 
+
 // 모든 태그가 렌더링되면 실행됨
 document.addEventListener('DOMContentLoaded', () => {
   initStories(); // 스토리 관련 js
