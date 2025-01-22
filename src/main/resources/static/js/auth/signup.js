@@ -142,6 +142,7 @@ async function validateField($input) {
     // 각 input에 검사결과를 저장
     $input.dataset.isValid = isValid.toString();
 
+
 }
 
 /**
