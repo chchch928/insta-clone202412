@@ -55,6 +55,7 @@ public class FollowService {
         // 팔로우 / 언팔로우 완료시 응답할 데이터
         // 팔로우 상태 데이터
         return Map.of("following", !isFollow,
+                // 내가 팔로우/언팔한 상대방의 팔로워 카운트를 갱신해주기 위한 데이터
                 "followerCount", followRepository.countFollowByType(followerId,"follower"));
     }
 

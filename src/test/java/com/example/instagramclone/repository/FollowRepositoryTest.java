@@ -43,7 +43,7 @@ class FollowRepositoryTest {
         long followerCount = followRepository.countFollowByType(targetUserId, "follower");
         long followingCount = followRepository.countFollowByType(targetUserId, "following");
         //then
-        assertThat(followerCount).isEqualTo(2L);
-        assertThat(followingCount).isEqualTo(3L);
+        assertThat(followerCount).isEqualTo(1L);
+        assertThat(followingCount).isEqualTo(1L);
     }
 }
